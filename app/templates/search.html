@@ -1,0 +1,129 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container p-3 d-flex flex-column gap-3">
+  <form class="input-group search-bar">
+    <button
+      class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center"
+      style="width: 6rem"
+      type="button"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      <span
+        id="searchType"
+        class="d-inline-flex flex-grow-1 justify-content-center"
+      >
+        {{- type -}}
+      </span>
+    </button>
+    <ul class="dropdown-menu">
+      {% for item in media_type %}
+      <li>
+        <div
+          class="dropdown-item clickable"
+          onclick="document.querySelector('#searchType').innerHTML='{{ item }}'"
+        >
+          {{ item }}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    <label for="inputSearch" class="form-label"></label>
+    <input
+      type="text"
+      class="form-control flex-grow-1"
+      style="box-shadow: none"
+      id="inputSearch"
+      {#name="q"
+      #}
+      value="{{ query }}"
+      placeholder="Search Here"
+    />
+    <button
+      type="submit"
+      id="submitSearch"
+      class="btn btn-primary form-control flex-grow-0"
+      style="width: max-content"
+    >
+      Search
+    </button>
+  </form>
+  <div class="d-flex flex-column gap-3">
+    {% for media in search %}
+    <a
+      class="d-flex rounded-3 bg-secondary-subtle gap-3 p-3 text-decoration-none text-black media-card"
+      media-id="{{ media.id }}"
+      media-type="{{ media.media_type.value }}"
+      href="/{{ media.media_type.value }}/{{ media.id }}"
+      onmouseover="this.classList.add('shadow')"
+      onmouseleave="this.classList.remove('shadow')"
+    >
+      <img
+        class="h-100 rounded-3"
+        src="{{ media.poster_path }}"
+        style="width: 8em"
+        alt="{{ media.title }}"
+      />
+      <div class="d-flex flex-column">
+        <div class="d-flex gap-3 align-items-center">
+          <div class="fw-semibold">{{ media.title or media.name }}</div>
+          <div class="favourite-btn col-1 text-secondary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-heart d-block"
+              viewBox="0 0 16 16"
+              onmouseover="this.setAttribute('fill','salmon')"
+              onmouseout="this.setAttribute('fill','currentColor')"
+            >
+              <path
+                d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"
+              ></path>
+            </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="salmon"
+              class="bi bi-heart-fill d-none"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
+              ></path>
+            </svg>
+          </div>
+        </div>
+        <div class="">{{ media.release_date }}</div>
+        <div class="text-secondary" style="font-size: 80%">
+          {{ media.genre_list|join('/') }}
+        </div>
+        <div>
+          <span class="fs-5" style="color: chocolate"
+            >{{ "%.2f"|format(media.vote_average) }}</span
+          >
+          /10
+        </div>
+        <div
+          class="text-multi-ellipsis"
+          style="-webkit-line-clamp: 5; font-size: 90%"
+        >
+          {{ media.overview }}
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %} {% block script %}
+<script>
+  document.querySelector(".search-bar").addEventListener("submit", (evt) => {
+    evt.preventDefault();
+    window.location.search = `?q=${
+      document.querySelector("#inputSearch").value
+    }&type=${document.querySelector("#searchType").innerHTML.toLowerCase()}`;
+  });
+</script>
+{% endblock %}

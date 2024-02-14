@@ -1,0 +1,122 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container d-flex flex-column gap-3 py-4">
+  <div class="d-flex align-items-center gap-5">
+    <h2 class="m-0">Trending</h2>
+    <nav
+      class="nav nav-pills nav-fill rounded-pill border-secondary-subtle border-1 border text-secondary"
+      style="
+        --bs-nav-pills-link-active-bg: mediumpurple;
+        --bs-nav-link-color: black;
+        --bs-nav-link-hover-color: mediumpurple;
+        line-height: 60%;
+      "
+    >
+      <button class="rounded-pill nav-link active">All</button>
+      <button class="rounded-pill nav-link">Movie</button>
+      <button class="rounded-pill nav-link">TV</button>
+    </nav>
+  </div>
+  {% for media_list in trending %}
+  <div class="trending-container p-3 grid">
+    {% for media in media_list %}
+    <div
+      class="g-col-3 media-card"
+      media-id="{{ media.id }}"
+      media-type="{{ media.media_type.value }}"
+    >
+      <a
+        href="/{{ media.media_type.value }}/{{ media.id }}"
+        class="text-decoration-none text-black"
+      >
+        <img
+          src="{{ media.poster_path }}"
+          alt="{{ media.title or media.name }}"
+          class="img-fluid rounded"
+          onmouseover="this.classList.add('shadow')"
+          onmouseleave="this.classList.remove('shadow')"
+        />
+      </a>
+      <div class="d-flex justify-content-between align-items-center">
+        <a
+          href="/{{ media.media_type.value }}/{{ media.id }}"
+          class="col-11 text-decoration-none text-black fw-semibold"
+          >{{ media.title or media.name }}</a
+        >
+        {% include 'components/favourite_btn.html' %}
+      </div>
+      <div>
+        <span class="fs-5" style="color: chocolate"
+          >{{ "%.2f"|format(media.vote_average) }}</span
+        >
+        /10
+      </div>
+      <div class="g-col-11 text-secondary" style="font-size: 80%">
+        {{ media.genre_list|join('/') }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  <h2 class="m-0">Air Today</h2>
+  <div class="p-3 grid">
+    {% for tv in air_today %}
+    <div
+      class="g-col-3 media-card"
+      media-id="{{ tv.id }}"
+      media-type="{{ tv.media_type.value }}"
+    >
+      <a
+        href="/{{ tv.media_type.value }}/{{ tv.id }}"
+        class="text-decoration-none text-black"
+      >
+        <img
+          src="{{ tv.poster_path }}"
+          alt="{{ tv.name }}"
+          class="img-fluid rounded"
+          onmouseover="this.classList.add('shadow')"
+          onmouseleave="this.classList.remove('shadow')"
+        />
+      </a>
+      <div class="d-flex justify-content-between align-items-center">
+        <a
+          href="/{{ tv.media_type.value }}/{{ tv.id }}"
+          class="col-11 text-decoration-none text-black fw-semibold"
+          >{{ tv.name }}
+        </a>
+          {% include 'components/favourite_btn.html' %}
+      </div>
+      <div>
+        <span class="fs-5" style="color: chocolate"
+          >{{ "%.2f"|format(tv.vote_average) }}</span
+        >
+        /10
+      </div>
+      <div class="g-col-11 text-secondary" style="font-size: 80%">
+        {{ tv.genre_list|join('/') }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %} {% block script %}
+<script>
+  document.querySelectorAll("button.nav-link").forEach((el) => {
+    el.addEventListener("click", () => {
+      document
+        .querySelector("button.nav-link.active")
+        .classList.remove("active");
+      el.classList.add("active");
+
+      const idx = [...el.parentElement.children].indexOf(el);
+      document
+        .querySelectorAll(".trending-container")
+        .forEach((e) => e.classList.add("d-none"));
+      document
+        .querySelectorAll(".trending-container")
+        [idx].classList.remove("d-none");
+    });
+  });
+  document.querySelectorAll(".trending-container")[1].classList.add("d-none");
+  document.querySelectorAll(".trending-container")[2].classList.add("d-none");
+</script>
+{% endblock %}

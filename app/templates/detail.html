@@ -1,0 +1,133 @@
+{% extends 'base.html' %} {% block content %} {% if media %}
+<img
+  class="position-absolute w-100 object-fit-cover bg-black"
+  style="
+    left: 0;
+    top: 60px;
+    z-index: -1;
+    height: 480px;
+    filter: brightness(30%) saturate(80%);
+  "
+  src="{{ media.backdrop_path or '' }}"
+  alt=""
+/>
+<div class="d-flex flex-column gap-3 px-5 pb-3">
+  <div
+    class="media-card d-flex p-3 text-white align-items-center position-relative"
+    media-id="{{ media.id }}"
+    media-type="{{ media.media_type.value }}"
+  >
+    <img
+      class="me-4 rounded-2"
+      style="width: 300px"
+      src="{{ media.poster_path }}"
+      alt="{{ media.title or media.name }}"
+    />
+    <dlv class="d-flex flex-column gap-3">
+      <div class="d-flex gap-2 align-items-center">
+        <div class="fs-2 fw-semibold">{{ media.title or media.name }}</div>
+        {% if media.release_date or media.first_air_date %}
+        <div class="fs-2 fw-light text-white-50">
+          ({{ (media.release_date or media.first_air_date)[:4]}})
+        </div>
+        {% endif %}
+        <div class="ms-4">{% include 'components/favourite_btn.html' %}</div>
+      </div>
+      <div class="d-flex gap-1 fw-light">
+        <div>{{ media.genres|map(attribute='name')|join('/') }}</div>
+        {% if media.runtime %}
+        <div>•</div>
+        <div>{{ media.runtime }} min</div>
+        {% endif %} {% if media.seasons %}
+        <div>•</div>
+        <div>{{ media.seasons|length }} Seasons</div>
+        {% endif %}
+      </div>
+      <div>
+        <span class="fs-5" style="color: chocolate"
+          >{{ "%.2f"|format(media.vote_average) }}</span
+        >
+        /10
+      </div>
+      <div class="fw-light text-white-50 fst-italic">{{ media.tagline }}</div>
+      <div class="fs-5">Overview</div>
+      <div class="fw-light" style="font-size: 90%">{{ media.overview }}</div>
+    </dlv>
+  </div>
+  {% if media.seasons %}
+  <h2>Seasons</h2>
+  <div class="detail-card-group">
+    {% for season in media.seasons %}
+    <div
+      class="d-flex flex-column border border-light border-1 rounded-2 shadow"
+      style="width: 150px; box-sizing: content-box"
+    >
+      <img
+        class="rounded-2"
+        style="width: 150px"
+        src="{{ season.poster_path }}"
+        alt="{{ season.name }}"
+      />
+      <div class="p-2">
+        <div class="fw-semibold" style="font-size: 85%">{{ season.name }}</div>
+        <div class="fw-light text-secondary" style="font-size: 70%">
+          Season {{ season.season_number }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <h2>Casts</h2>
+  <div class="detail-card-group">
+    {% for cast in media.credits.cast[:20] %}
+    <div
+      class="d-flex flex-column border border-light border-1 rounded-2 shadow"
+      style="width: 150px; box-sizing: content-box"
+    >
+      <img
+        class="rounded-2"
+        style="width: 150px"
+        src="{{ cast.profile_path }}"
+        alt="{{ cast.name }}"
+      />
+      <div class="p-2">
+        <div class="fw-semibold" style="font-size: 85%">{{ cast.name }}</div>
+        <div class="fw-light text-secondary" style="font-size: 70%">
+          {{ cast.character }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <h2>Crew</h2>
+  <div class="detail-card-group">
+    {% for crew in media.credits.crew[:20] %}
+    <div
+      class="d-flex flex-column border border-light border-1 rounded-2 shadow"
+      style="width: 150px; box-sizing: content-box"
+    >
+      <img
+        class="rounded-2"
+        style="width: 150px"
+        src="{{ crew.profile_path }}"
+        alt="{{ crew.name }}"
+      />
+      <div class="p-2">
+        <div class="fw-semibold" style="font-size: 85%">{{ crew.name }}</div>
+        <div class="fw-light text-secondary" style="font-size: 70%">
+          {{ crew.job }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<div
+  class="d-flex justify-content-center align-items-center fs-1 text-black-50 fw-bold h-50"
+>
+  Oops! The connection is unstable. Please try again later.
+</div>
+{% endif %} {% endblock %}
